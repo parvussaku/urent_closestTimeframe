@@ -105,6 +105,19 @@ const DATA = [
 ];
 
 export default function App() {
+  const closest = (num, arr) => {
+    var curr = arr[0];
+    var diff = Math.abs(num - curr);
+    for (var val = 0; val < arr.length; val++) {
+      var newdiff = Math.abs(num - arr[val]);
+      if (newdiff < diff) {
+        diff = newdiff;
+        curr = arr[val];
+      }
+    }
+    return curr;
+  };
+
   const getBestFromObj = (obj) => {
     // make a list of unique times
     var listOfTimes = [];
@@ -135,16 +148,12 @@ export default function App() {
       var hours = Math.abs(new Date(timeArr[0]) - new Date(timeArr[1])) / 36e5;
       listOfHours.push(hours);
     });
-    // get closest from the list of hours
-    var closest = listOfHours.reduce(function (prev, curr) {
-      return Math.abs(curr - TIME_LENGTH) < Math.abs(prev - TIME_LENGTH)
-        ? curr
-        : prev;
-    });
+
+    var closestHour = closest(TIME_LENGTH, listOfHours);
 
     const bestTime = {
-      startEnd: listOfTimes[listOfHours.indexOf(closest)],
-      hours: closest,
+      startEnd: listOfTimes[listOfHours.indexOf(closestHour)],
+      hours: closestHour,
     };
 
     return bestTime;
@@ -157,17 +166,18 @@ export default function App() {
       return best;
     });
 
-    var closest = listOfBest.reduce(function (prev, curr) {
-      return {
-        hours:
-          Math.abs(curr.hours - TIME_LENGTH) <
-          Math.abs(prev.hours - TIME_LENGTH),
-      }
-        ? curr
-        : prev;
+    const listOfHours = listOfBest.map((obj) => {
+      return obj.hours;
     });
 
-    console.log(closest);
+    var closestHour = closest(TIME_LENGTH, listOfHours);
+
+    const bestTime = {
+      startEnd: listOfBest[listOfHours.indexOf(closestHour)],
+      hours: closestHour,
+    };
+
+    console.log(bestTime);
     console.log(listOfBest);
   };
 
